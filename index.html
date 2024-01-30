@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>What is CNN?</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(ellipse at bottom, #152735 0%, #090909 100%);
+            color: #fff;
+            position: relative;
+        }
+
+        .stl {
+            font-family: "Josefin Sans", sans-serif;
+            font-size: 4.2vw;
+            text-align: center;
+            background: -webkit-linear-gradient(white,cyan);
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.6);
+            margin-bottom: 15px;
+        }
+
+        #top h1{
+            font-family: "Josefin Sans", sans-serif;
+            font-size: 5vw;
+            text-align: center;
+            background: -webkit-linear-gradient(white,cyan);
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        nav {
+            position: absolute;
+            top: 70%;  /* Adjust based on your design preference */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;  /* Space between links */
+            z-index: 1;
+            overflow-x: auto; /* 横方向のオーバーフローをスクロール可能にする */
+            white-space: nowrap; /* リンクを改行せずに一行に表示する */
+        }
+
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 15px;
+            border: 2px solid white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;  /* 中央にコンテンツを垂直配置 */
+            justify-content: center; /* 中央にコンテンツを水平配置 */
+            transition: background 1s;
+        }
+
+        table, ul {
+            margin: 0 auto;
+        }
+
+        table {
+            font-size: 1.1em;
+            width: 80%; /* <p> と同じ幅で中央に配置 */
+            border-collapse: collapse; /* ボーダーの見た目を改善 */
+        }
+
+        li {
+            font-size: 1.1em;
+            margin: 5px 0; /* リストアイテム間のスペース */
+        }
+
+
+        .flex-container {
+            display: flex;
+            align-items: center;  /* Center vertically */
+            justify-content: center; /* Center horizontally */
+        }
+
+
+
+        .header-wrapper {
+            height: 100vh;  /* 画面の高さに合わせます */
+            position: relative;
+        }
+
+        section h2 {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 4px solid white;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        section h3 {
+            font-size: 2.0em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 3px solid white;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        section p {
+            font-size: 1.2em;
+            line-height: 1.5;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        .b {
+            color: #E74C3C;
+            font-weight: bold;
+            font-size: 1.4em;
+        }
+
+
+        section figure{
+            font-size: 1.2em;
+            line-height: 1.5;
+            max-width: 80%;
+            margin: 0 auto;
+            align-content: center;
+            text-align: center;
+            align-items: center;
+        }
+
+        section ul{
+            font-size: 1.2em;
+            line-height: 1.5;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section h2, section p {
+            animation: fadeIn 1s forwards;
+        }
+
+        /* ハンバーガーアイコンのスタイル */
+
+        .hamburger {
+            display: flex;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 18px;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .dropdown-menu {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+            z-index: 9;
+            flex-direction: column;
+        }
+
+        .dropdown-menu a {
+            color: white;
+            padding: 15px 20px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 4px;
+            background-color: white;
+            transition: 0.4s;
+        }
+
+        .hamburger.active {
+            width: 32px;
+            height: 32px;
+            border-radius: 20%;
+            background-color: white;
+        }
+
+        .hamburger.active span {
+            background-color: transparent;
+        }
+
+
+
+        /* Table Styles */
+
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        table th, table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table td {
+            font-size: 1.5em;  /* Adjust this value as per your requirement */
+        }
+
+        table th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        table img {
+            width: 100px;
+            height: auto;
+        }
+
+        figcaption {
+            font-size: 15px;
+            color: #555;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .ox {
+            font-size: 16px;
+            background-color: #f7f7f7;
+            border-left: 3px solid #f0ad4e;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });
+</script>
+
+
+<div class="hamburger" id="hamburger-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+
+<!-- ドロップダウンメニュー -->
+<div class="dropdown-menu" id="dropdown-menu">
+    <a href="#top">Top</a>
+    <a href="#section0">Title</a>
+    <a href="#section1">CNN</a>
+    <a href="#section2">Pooling Layer</a>
+    <a href="#section3">Activation Function</a>
+    <a href="#section4">Normalization</a>
+    <a href="#section5">Fully Connected Layer</a>
+    <a href="#section6">Loss Function</a>
+    <a href="#section7">Optimization</a>
+    <a href="#section8">Back Propagation</a>
+</div>
+
+<div class="header-wrapper" id="top">
+    <h1 id="title">What is CNN ?</h1>
+    <nav>
+        <a href="#section0">Title</a>
+        <a href="#section1">CNN</a>
+        <a href="#section2">Pooling Layer</a>
+        <a href="#section3">Activation Function</a>
+        <a href="#section4">Normalization</a>
+        <a href="#section5">Fully Connected Layer</a>
+        <a href="#section6">Loss Function</a>
+        <a href="#section7">Optimization</a>
+        <a href="#section8">Back Propagation</a>
+    </nav>
+</div>
+
+<section id="section0">
+    <div id="t0">
+        <h1 class="stl" id="convolutional-neural-networks">0. CNN (Convolutional Neural Networks)</h1>
+
+        <p><img src="https://upload.wikimedia.org/wikipedia/commons/6/63/Typical_cnn.png" alt="Description of the image"></p>
+        <p>Image by <a href="https://en.m.wikipedia.org/wiki/File:Typical_cnn.png">Aphex34</a> under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></p>
+
+        <h2>概要</h2>
+        <p>CNNは、画像や音声などのグリッド構造データの自動特徴抽出を得意とするニューラルネットワークの一種である。
+            CNNは畳み込みという基本的な画像処理の演算を実行する<strong>畳み込み層</strong>と呼ばれる層を持つことが特徴である</p>
+        <p>CNNは、複数の畳み込み層、プーリング層、および完全結合層から構成され、画像などの高次元データを効率的に処理する。</p>
+        <p>CNNは、特に画像認識やビデオ処理に適した深層学習のアーキテクチャで、畳み込み層を使用して入力データから局所的な特徴を抽出する能力が特徴。</p>
+
+        <h2>特徴</h2>
+        <div class="content">
+            <ul>
+                <li><b>畳み込み層</b>: フィルタを通して特定の特徴を抽出。</li>
+                <li><b>プーリング層</b>: 特徴マップの次元縮小と過学習の防止。</li>
+                <li><b>完全結合層</b>:  抽出された特徴に基づく分類や予測。</li>
+            </ul>
+        </div>
+        <div class="slide">
+            <h2>数学的背景</h2>
+            <ul>
+                <li>
+                    畳み込み層では、入力データ $I$ とフィルタ $F$ の畳み込みを計算する。この操作は、$(I * F)(x, y) = \sum_m \sum_n I(m, n) F(x-m, y-n)$ と表される。
+                </li>
+                <li>
+                    プーリング層では、特定の領域の最大値（Max Pooling）または平均値（Average Pooling）を計算する。
+                </li>
+                <li>
+                    完全結合層では、重み $W$ とバイアス $b$ を用いて、$y = f(Wx + b)$ の形で出力を計算する。
+                </li>
+            </ul>
+        </div>
+
+        <h2>CNNの利点と応用例</h2>
+        <p>CNNは、その特有の構造により、手書き文字認識や顔認識などのタスクにおいて高い精度を持つ。
+            また、自動運転車や医療画像解析などの分野でも広く利用されている</p>
+    </div>
+</section>
+
+<hr>
+
+<section id="section1">
+    <div id="t1">
+        <h1 class="stl" id="convolution-layer">1. 畳み込みレイヤ(Convolution layer)</h1>
+        <p>畳み込みレイヤはCNNの核心となる部分で、ローカルな情報をキャッチする役割がある。これは、入力データに対してフィルタ (またはカーネル) をスライドさせて畳み込みを行うことで実現される。</p>
+        <h2 class="numerical-formula">数式</h2>
+        <p>畳み込み操作は以下の画像とフィルタ間で定義される積和演算の式で表される。</p>
+        <p class="formula">
+            \[
+            O_{i,j} = \sum_{m}^{W_f -1} \sum_{n}^{H_f -1} I_{i-m, j-n} \times K_{m, n}
+            \]
+        </p>
+        <p>フィルタを上下・左右反転させると次の式となる。</p>
+        <p class="formula">$$
+            O_{i,j} = \sum_{m}^{W_f -1} \sum_{n}^{H_f -1} I_{i+m, j+n} \times K_{m, n}
+            $$</p>
+
+        <p>ここで、
+            $O_{i,j}$ は出力のピクセル、
+            $I_{i+m, j+n}$ は入力のピクセル、</p>
+        <p>フィルタの画素のインデックスを
+            $(m,n)(m = 0, 1 , \dots , W_f -1 , n = 0, 1, \dots , H_f -1)$
+            で表し
+            $K_{m, n}$ はフィルタの画素値を表す。</p>
+        <h2 class="example">例:</h2>
+
+        <p><img width="500" src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/description/image.png" alt="filter text"></p>
+        <p>また、全結合ニューラルネットワークでは、重みパラメータの他に<strong>バイアス</strong>も存在する。</p>
+
+        <p class="formula">$$
+            O_{i,j} = \sum_{m} \sum_{n} I_{i+m, j+n} \times K_{m, n} + B
+            $$</p>
+
+        <p><img width="500" src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/description/image-1.png" alt="+Bias text"></p>
+        <p>フィルタの動き:</p>
+        <p><img alt="filter" src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/filter.gif" width="500"/></p>
+
+        <h2>1.2. <strong>パディング (Padding)</strong></h2>
+        <p>畳み込み操作を行う際に、入力データの周辺に仮のデータ (通常0) を追加すること。これにより、出力データのサイズの縮小を防ぐか、または調整することができる。</p>
+        <p>本来の入力データと同じ大きさの出力が得られる</p>
+        <p><img width="500" src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/description/image-2.png" alt="padding"></p>
+        <h2>1.3.<strong>ストライド (Stride)</strong></h2>
+        <p>フィルタをスライドさせる際のステップのサイズ。ストライドが1の場合、フィルタは入力データ上で1ピクセルずつスライドする。ストライドが2の場合は2ピクセルずつとなる。</p>
+        <p>ストライドを大きくすると出力サイズは小さくなる。また、パディングを大きくすると出力サイズは大きくなる。</p>
+        <p><img width="500" src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/description/image-3.png" alt="Alt text"></p>
+        <h2>1.4.出力サイズの計算</h2>
+        <p>出力サイズ : $O$ ,
+            入力サイズ : $I$ ,
+            フィルタ(カーネル) : $K$ ,
+            ストライド : $S$ ,
+            パディング : $P$,</p>
+        <p>とすると、出力サイズは</p>
+        <p class="formula">$$
+            O = \frac{I + 2P - K}{S} + 1
+            $$</p>
+        <br>
+        <p>で表すことができる</p>
+        <h2>1.5. 3階テンソルとしての畳み込み</h2>
+        <p>CNNでは一般的に<strong>3階テンソル（3D Tensor）</strong>として画像データを扱う。これは、高さ、幅、そして深さ（チャンネル数）の3つの次元を持っている。例えば、カラー画像はRGBの3つのチャンネルから成るので、3階テンソルとして考えることができる。</p>
+        <p><img width="500" src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/description/image-6.png" alt="3階テンソル"></p>
+        <p>畳み込みをブロックで考えると、フィルタは入力データの小さなブロックに適用され、それぞれのブロックの出力が新しい特徴マップのピクセルとなる。</p>
+        <p>I,K,O,B　をそれぞれ<strong>ブロック</strong>としたもの<br>
+            <img width="850" src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/description/image-5.png" alt="3d"></p>
+
+        <h2>1.6. それぞれのフィルタ</h2>
+
+        <!--table-->
+        <div class="flex-container">
+            <figure>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Input</th>
+                        <th>Padding</th>
+                        <th>Stride</th>
+                        <th>Kernel</th>
+                        <th>Output</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Convolution_arithmetic_-_No_padding_no_strides.gif" alt="Animation of a variation of the convolution operation.">
+                        </td>
+                        <td>4</td><!--input size-->
+                        <td>0</td><!--padding-->
+                        <td>1</td><!--stride-->
+                        <td>3</td><!--kernel-->
+                        <td>2</td><!--output size-->
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Convolution_arithmetic_-_No_padding_strides.gif" alt="Animation of a variation of the convolution operation.">
+                        </td>
+                        <td>5</td><!--input size-->
+                        <td>0</td><!--padding-->
+                        <td>2</td><!--stride-->
+                        <td>3</td><!--kernel-->
+                        <td>2</td><!--output size-->
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/Convolution_arithmetic_-_Padding_strides_odd.gif" alt="Animation of a variation of the convolution operation.">
+                        </td>
+                        <td>6</td><!--input size-->
+                        <td>1</td><!--padding-->
+                        <td>2</td><!--stride-->
+                        <td>3</td><!--kernel-->
+                        <td>3</td><!--output size-->
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Convolution_arithmetic_-_No_padding_no_strides_transposed.gif" alt="Animation of a variation of the convolution operation.">
+                        </td>
+                        <td>2</td><!--input size-->
+                        <td>2</td><!--padding-->
+                        <td>1</td><!--stride-->
+                        <td>3</td><!--kernel-->
+                        <td>4</td><!--output size-->
+                    </tr>
+                    </tbody>
+                </table>
+                <figcaption>
+                    <strong>Description:</strong> Animation of a variation of the convolution operation. Blue maps are inputs, and cyan maps are outputs.<br>
+                    <strong>Source:</strong> <a href="https://github.com/vdumoulin/conv_arithmetic">GitHub Repository</a> <br>
+                    <strong>Author:</strong> Vincent Dumoulin, Francesco Visin <br>
+                    <strong>Licensing:</strong> This file is licensed under the Expat License (MIT License).
+                </figcaption>
+            </figure>
+        </div>
+
+    </div>
+</section>
+
+<section id="section2">
+    <div id="t2">
+        <h1 class="stl" id="pooling-layer">2. Poolingレイヤ (プーリングレイヤ)</h1>
+        <p>プーリングレイヤは、畳み込みによって抽出された特徴のサイズを縮小することで計算量を減らし、特徴の位置感度を低くする役割がある。主なプーリング操作にはMax PoolingやAverage Poolingがある。</p>
+        <h2>2.1. <strong>ダウンサンプリング (Downsampling)</strong></h2>
+        <p>特徴マップの次元を削減する操作。Max Poolingなどのプーリング操作はダウンサンプリングの一形態として考えられる。</p>
+        <h3 class="example">例:</h3>
+        <p>2x2 Max Poolingの場合、2x2の領域の中の最大値がその領域の出力となる。</p>
+        <p><img src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/description/image-4.png" alt="2*2 Max Pooling"></p>
+        
+    </div>
+</section>
+
+<section id="section3">
+    <div id="t3">
+        <h1 class="stl" id="activation-function">3. 活性化関数(Activation function)</h1>
+        <p>活性化関数(Activation function)は、ニューラルネットワークの各ニューロンの出力を決定するための関数である。
+            これにより、ネットワークに非線形性を導入し、複雑な関数やパターンを学習する能力を持たせることができる。
+            非線形性の導入がないと、深いニューラルネットワークの多くの層は、単一の層に集約することが可能となり、多層の意味がなくなる。
+            主な活性化関数としては、Sigmoid、Tanh、ReLUなどが存在する。</p>
+        <div class="func">
+            <h2>3.1. ReLU (Rectified Linear Unit)</h2>
+            <p>ReLUは、非線形性をネットワークに導入するためのもので、特に深いニューラルネットワークで広く使われている。負の入力値に対しては0を、正の入力値に対してはそのままの値を出力する。</p>
+            <h3 class = "numerical-formula">数式:</h3>
+            <p>ReLU関数は次のように表される。</p>
+            <p class="formula">$$
+                f(x) = \max(0, x)
+                $$</p>
+        </div>
+        <div class="func">
+            <h2 id="32-sigmoid">3.2. Sigmoid</h2>
+            <p>Sigmoid関数は、任意の実数値を取り、0から1の間の値を出力する。これは、確率や二項分類の出力としてしばしば用いられる。</p>
+            <h3 class = "numerical-formula">数式:</h3>
+            <p>Sigmoid関数は次のように表される。</p>
+            <p class="formula">$$
+                f(x) = \frac{1}{1 + e^{-x}}
+                $$</p>
+        </div>
+        <div class="func">
+            <h2 id="33-tanh">3.3. Tanh</h2>
+            <p>Tanh（ハイパボリックタンジェント）関数は、Sigmoid関数と似ているが、出力の範囲が-1から1の間である。</p>
+            <h3 class = "numerical-formula">数式:</h3>
+            <p>Tanh関数は次のように表される。</p>
+            <p class="formula">$$
+                f(x) = \tanh(x) = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}}
+                $$</p>
+        </div>
+
+        <h2>活性化関数のグラフ</h2>
+        <p><img src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/graph/Act-func.png" alt="function"></p>
+        <p>各活性化関数は、特定のタスクやネットワークの構造に応じて選択される。ReLUは学習の速度や収束性に優れているため、現代の深いネットワークでよく使われているが、ニューロンの&quot;死&quot;という問題も持っている。このような問題を解決するための変種として、Leaky ReLUやParametric ReLUなども提案されている。</p>
+
+    </div>
+</section>
+
+<section id="section4">
+    <div id="t4">
+        <h1 class="stl" id="normalization">4. 正規化 (Normalization)</h1>
+        <p><img width="1000" src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/description/Normalization.png" alt="(Batch ,Layer, Instance )Normalization"></p>
+        <p>正規化は、ニューラルネットワークの学習を助けるために入力データや層の出力を特定の範囲または分布に変換する手法である。特に、深いニューラルネットワークでは、正規化が無ければ学習が不安定になったり、収束が遅くなることが知られている。</p>
+        <p>$N$個のサンプルから構成されるミニバッチと、出力サイズが $W\times H \times C$ の畳み込み層を考えるとき、各データポイントに対してインデックスはバッチ、チャンネル、画像サイズの順に割り当てられる。具体的に、それぞれの上限を $(N,C,WH)$ として示すことができる。</p>
+        <p>正規化手法は、これらのインデックスの組み合わせに基づき、特定の統計量を計算する領域を決定する。以下の表は、各正規化手法がどのようにインデックス $*$ を取り扱うかを示す。</p>
+        <div class="flex-container">
+            <table>
+                <thead>
+                <tr>
+                    <th style="text-align:center">正規化手法</th>
+                    <th style="text-align:center">計算の範囲</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="text-align:center">バッチ正規化</td>
+                    <td style="text-align:center">$(*,C,*)$</td>
+                </tr>
+                <tr>
+                    <td style="text-align:center">レイヤー正規化</td>
+                    <td style="text-align:center">$(N,*,*)$</td>
+                </tr>
+                <tr>
+                    <td style="text-align:center">インスタンス正規化</td>
+                    <td style="text-align:center">$(N,C,*)$</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="flex-container">
+            <ul>
+                <li><strong>バッチ正規化</strong>: チャンネルごとに統計量を計算するが、ミニバッチ全体での平均と分散を使用する。</li>
+                <li><strong>レイヤー正規化</strong>: 各サンプルごとに、全てのチャンネルと空間的な位置で統計量を計算する。</li>
+                <li><strong>インスタンス正規化</strong>: 各サンプルとチャンネルごとに、空間的な位置で統計量を計算する。</li>
+            </ul>
+        </div>
+
+        <p>これらの正規化手法は、異なる範囲のデータに基づいて統計量を計算することで、モデルの学習を安定化させ、性能を向上させる効果が期待される。</p>
+        <h2>4.1. バッチ正規化 (Batch Normalization)</h2>
+        <p>バッチ正規化(Batch Normalization)は、ミニバッチごとの入力分布を正規化することで、学習を安定化させ、高速化する手法である。
+            具体的には、各ミニバッチの平均と分散を用いて正規化を行い、さらにスケール変換と平行移動を可能にする学習可能なパラメータを持つ。</p>
+        <p>ミニバッチのサンプルを $n=(1,2\dots N)$で表し、畳み込み層のチャンネルCを構成する
+            $W \times H$ 内の位置 $(i,j)$のユニットへの層入力を
+            ${u}_{ijc}^{(n)}$とする時、平均は以下のように表せる。</p>
+
+        <p class="formula">$$
+            \mu_C = \frac{1}{NWH} \sum_{i,j,n} {u}_{ijc}^{(n)}
+            $$</p>
+
+        <p>ミニバッチの分散は次のように計算される:</p>
+
+        <p class="formula">$$
+            \sigma_C^2 = \frac{1}{NWH} \sum_{i,j,n} \left( {u}_{ijc}^{(n)} - \mu_C \right)^2
+            $$
+        </p>
+        <p>次のように正規化する</p>
+
+        <p class="formula">$$
+            \hat{u}_{ijc}^{(n)} = \gamma_C \frac{{u}_{ijc}^{(n)} - \mu_C}{\sqrt{\sigma_C^2 + \epsilon}} + \beta_C
+            $$
+        </p>
+
+        <p>ここで、 $\gamma$ と $\beta$ は学習可能なパラメータ(学習によって定めた定数)であり、</p>
+        <p>$\mu_C$ と $\sigma_C^2$ はミニバッチの平均と分散を示す。</p>
+        <p>$\epsilon$ は数値的な安定性を保つための微小な正の値である。
+            (0除算を防ぐ為の値)</p>
+        <h2>4.2. 局所コントラスト正規化 (Local Contrast Normalization)</h2>
+        <p>局所コントラスト正規化 (Local Contrast Normalization: LCN) は、特定の位置に焦点を当て、その位置の入力のコントラストを強調または正規化する手法である。この方法は、特に画像データなどの空間的なデータで、近隣のピクセルとの関係を強調するのに有効である。</p>
+        <h3>数式の説明</h3>
+        <p>$\mu_{ij}$  と $\sigma_{ij}^2$ は位置 $(i, j)$ の周囲のピクセルの平均と分散を示す</p>
+        <p>畳み込み層の出力の各要素を、その近傍の要素の平均や標準偏差を用いて正規化する操作を考えると、数学的には、ある位置 $(i, j)$ のピクセル値 $u_{ij}$ を次のように正規化する</p>
+
+        <p class="formula">
+            $$
+            \hat{u}_{ij} = \frac{u_{ij} - \mu_{ij}}{\sqrt{\sigma_{ij}^2 + \epsilon}}
+            $$</p>
+
+        <p>ここで、 $\epsilon$ は数値的な安定性を保つための微小な正の値である。</p>
+        <p>局所コントラスト正規化は、バッチ正規化とは異なり、各位置での値を、その周辺の情報を基に独立して正規化する。この特性により、画像内の局所的な特徴やパターンを強調する効果が期待される。</p>
+        
+    </div>
+</section>
+
+
+<section id="section5">
+    <div id="t5">
+        <h1 class="stl" id="fully-connected-layer">5. 全結合層 (Fully Connected Layer)</h1>
+        <p>全結合層（Fully Connected Layer、略称: FC layer）は、ニューラルネットワークの一部として広く利用される層の1つである。この層は、各入力ノードが他のすべての出力ノードと結合している特性から、その名がつけられた。特に、畳み込みニューラルネットワーク (CNN) の末端で、特徴マップを1Dのベクトルに変換して、最終的な分類や予測を行うために用いられる。</p>
+        <h2>5.1. 目的</h2>
+        <p>全結合層の主な目的は、前の層からの特徴を組み合わせて、タスク（分類、回帰など）に対する最終的な予測を行うことである。
+            例えば、画像分類問題において、CNNの畳み込みレイヤやプーリングレイヤを通過した後、得られた特徴マップを全結合層に入力として、最終的な分類ラベルの確率ベクトルを出力する。</p>
+
+        <h2>5.2. 数学的背景</h2>
+        <p>全結合層の基本的な計算は、線形変換と活性化関数の適用から成る。</p>
+        <p>数学的には以下のように表される:</p>
+
+        <p class="formula">$$
+            y = f(Wx + b)
+            $$</p>
+
+        <p>ここで、</p>
+        <p>$x$ は入力ベクトル</p>
+        <p>$W$ は重み行列</p>
+        <p>$b$ はバイアスベクトル</p>
+        <p>$f$ は活性化関数 (例: ReLU、Sigmoid、Tanh等)</p>
+        <p><img alt="unit" width="500" id="unit-img" src="https://raw.githubusercontent.com/rxxuzi/dl/main/docs/pics/description/unit.png"/></p>
+        <br>
+
+        <h2>5.3. 用途</h2>
+
+        <div class="flex-container">
+            <ul>
+                <li>
+                    <p><strong>分類タスク</strong>: 全結合層は、特徴ベクトルを受け取り、それを特定のクラスラベルの確率分布に変換するために使われる。これは、ソフトマックス関数をアクティベーションとして使用することで実現されることが多い。ソフトマックス関数は、出力層の各ノードの出力を、クラスラベルの確率分布に変換する。</p>
+                </li>
+                <li>
+                    <p><strong>回帰タスク</strong>: 全結合層は、特徴ベクトルを受け取り、連続的な値またはベクトルを出力するために使われる。この場合、アクティベーション関数として線形関数や他の関数が使用されることがある。</p>
+                </li>
+            </ul>
+        </div>
+
+
+        <p><strong class="b">全結合層とはつまり、プーリング層から得た多次元のベクトルを1次元のベクトルに変換する層である</strong></p>
+    </div>
+</section>
+
+<section id="section6">
+    <div id="t6">
+        <h1 class="stl" id="loss-function">6. 損失関数 (Loss Function)</h1>
+        <p>
+            <img src="https://assets.datacamp.com/production/repositories/654/datasets/ae1e22908f7dd30854491c8d1f04b2817f6a6ccf/ch2_1_v3.023.png" alt="lossfunc" height="300">
+        </p>
+        <p>損失関数（Loss Function）は、機械学習や深層学習のモデル訓練中の性能を評価するための関数である。この関数は、モデルの予測と実際の目標値の間の差異を数値として表現し、その差異を最小化することを目指してモデルのパラメータを更新する際の基準として使用される。</p>
+        
+        <h2>6.1. 平均二乗誤差 (Mean Squared Error: MSE)</h2>
+        <p>平均二乗誤差は、回帰タスクにおいて広く使用される損失関数である。真の値と予測値との差の二乗の平均をとることで計算される。</p>
+        <p class="formula">$$MSE(y, \hat{y}) = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2$$</p>
+
+        <h2>6.2. ソフトマックス交差エントロピー (Softmax Cross Entropy)</h2>
+        <p>ソフトマックス交差エントロピーは、多クラス分類タスクにおける損失関数として使用される。ソフトマックス関数は、クラスの確率的な分布を生成するためのものであり、その後、交差エントロピー損失が計算される。</p>
+        <p class="formula">$$L(y, \hat{y}) = - \sum_{i=1}^{C} y_i \log(\hat{y}_i)$$</p>
+
+        <h2>6.3. シグモイド交差エントロピー (Sigmoid Cross Entropy)</h2>
+        <p>シグモイド交差エントロピーは、二値分類タスクのための損失関数である。シグモイド関数を使用して、出力を [0, 1] の範囲に変換した後、交差エントロピー損失が計算される。</p>
+        <p class="formula">$$L(y, \hat{y}) = - \left( y \log(\hat{y}) + (1 - y) \log(1 - \hat{y}) \right)$$</p>
+
+        <h2>6.4. 二値交差エントロピー (Binary Cross Entropy)</h2>
+        <p>二値交差エントロピーは、シグモイド交差エントロピーと同じく二値分類タスクのための損失関数である。実際、この損失関数はシグモイド交差エントロピーと同一である。</p>
+        <p class="formula">$$L(y, \hat{y}) = - \left( y \log(\hat{y}) + (1 - y) \log(1 - \hat{y}) \right)$$</p>
+
+        <h2>重要性</h2>
+        <p>損失関数は、モデルの訓練中のガイドとなる。最適化手法（例：勾配降下法）は、この関数を最小化する方向にモデルのパラメータを更新する。したがって、適切な損失関数の選択は、モデルの性能と収束速度に大きく影響する。</p>
+        
+    </div>
+</section>
+
+<section id="section7">
+    <div id="t7">
+        <h1 class="stl" id="optimization-techniques">7. 最適化手法 (Optimization Techniques)</h1>
+        
+        <p>
+            <img height="300" src="https://qiita-user-contents.imgix.net/https%3A%2F%2Fruder.io%2Fcontent%2Fimages%2F2016%2F09%2Fsaddle_point_evaluation_optimizers.gif?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&w=1400&fit=max&s=f4c7acf4fc8c159ecbd04b054d99c252" alt="sgd">
+        </p>
+        <p>CNNの学習は、一般的なニューラルネットワークの学習と同様に、バックプロパゲーションを使用して行われる。バックプロパゲーションは、予測誤差を最小化するためのパラメータの調整を行うアルゴリズムであり、損失関数の勾配を計算して、その勾配情報を用いてパラメータを更新する。</p>
+        <p>最適化手法は、ニューラルネットワークの学習における損失関数の最小化を目指す技術の一つである。以下は、主要な最適化手法についての説明である。</p>
+        <p>以下の手法は、それぞれ異なる特性を持ち、研究や実務の現場での適用が考慮される。ニューラルネットワークの学習において、適切な最適化手法の選択は、モデルの性能や収束速度に大きな影響を与える。</p>
+        
+        
+
+        <h2>SGD (Stochastic Gradient Descent)</h2>
+        <p>SGDは、最適化手法の中で最も基本的かつ広く用いられている方法である。この手法は、各更新時に一部のトレーニングデータから損失関数の勾配を計算し、その勾配方向にパラメータを更新する。</p>
+
+        <h2>Momentum</h2>
+        <p>Momentumは、SGDをベースとした手法であり、過去の勾配の情報を考慮して、パラメータの更新を行う。これにより、更新の方向性が安定し、局所的な最適点に収束するリスクを低減する効果がある。</p>
+
+        <h2>AdaGrad</h2>
+        <p>AdaGradは、各パラメータに対して学習率を動的に調整する手法である。これにより、頻繁に更新されるパラメータは学習率が緩やかに低下し、逆に更新されにくいパラメータは学習率が上昇する。</p>
+
+        <h2>RMSprop</h2>
+        <p>RMSpropは、AdaGradの持つ学習率の低下が急激になる問題を緩和するための手法である。これは、過去の勾配の2乗の移動平均を用いて、学習率を調整することで実現される。</p>
+
+        <h2>Adam</h2>
+        <p>Adamは、MomentumとRMSpropの概念を組み合わせた最適化手法である。この手法は、勾配の1次モーメントと2次モーメントを利用して、パラメータの更新を行う。</p>
+
+
+        <h2>グラフ</h2>
+        <figure>
+            <img src="pics/Momentum%20SGD-Graph-lr=3.0.png" alt="Momentum SGD Loss Graph" style="width: 400px;">
+            <figcaption>図：学習率3.0でのMomentum SGDの損失関数の減少。グラフは、訓練が進むにつれて損失がどのように減少していくかを示している。</figcaption>
+        </figure>
+        <p>このグラフの見方について、横軸はエポック数を示し、縦軸は損失関数の値を示している。<br>
+            <b>エポック</b>とは、訓練データセットを一巡することを意味し、損失関数の値はモデルの予測がどれだけ実際のデータから離れているかを数値化したものである。<br>
+            グラフが示すように、エポック数が増えるにつれて損失関数の値が減少しており、これはモデルが学習していく過程で予測精度が向上していることを意味する。<br>
+            また、損失が減少する速度が時間とともに緩やかになるのは、モデルが最適なパラメータに近づいていることを示している。</p>
+    </div>
+</section>
+
+<section id="section8">
+    <div id="t8">
+        <h1 class="stl" id="back-propagation">7. バックプロパゲーション(back-propagation)</h1>
+
+        <p>
+        <img width="500" src="./pics/description/bp-0.png" alt="back-propagation">
+        <a href="https://becominghuman.ai/back-propagation-in-convolutional-neural-networks-intuition-and-code-714ef1c38199">By Mayank Agarwal</a>
+        </p>
+
+        <p class="b">バックプロパゲーションは、ネットワークが予測を行い、その予測がどの程度間違っていたか（損失）を計算し、その情報を使ってネットワークの重みを調整するプロセスである。</p>
+        <p>損失関数 $L$ は、実際の値 $y$ と予測値 $\hat{y}$ の差を表す。例えば、平均二乗誤差は次のように表される:</p>
+        <p class="formula">
+            $$ L = \frac{1}{n} \sum (y - \hat{y})^2 $$
+        </p>
+
+        <p>勾配降下法は、この損失を最小化するために重みを更新する。重み $w$ の更新は、損失関数の勾配 $\nabla L$ に基づいて行われる:</p>
+        <p class="formula">$$ w = w - \alpha \nabla L $$</p>
+
+        <p>確率的勾配降下法（SGD）は、データの一部を使ってこれらの更新を行う。全データを使用した後、プロセスは最初からやり直され、このプロセスの各ステップを<b>エポック</b>と呼ぶ。</p>
+
+        <ul>
+            <li>1.ランダムな重みからスタートし、前方伝搬で予測を行う。</li>
+            <li>2.後方伝搬で各重みに対する損失関数の勾配を計算する。</li>
+            <li>3.計算した勾配に学習率を乗じ、現在の重みから引く。</li>
+            <li>4.勾配が平坦になるまで上記ステップを繰り返す。</li>
+        </ul>
+
+        <p>参考:,<br>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/Ilg3gGewQ5U?si=kn7ELl9_5rpyoTpX" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </p>
+    </div>
+</section>
+
+
+<hr>
+
+<footer>
+    <p>© 2023 Rxxuzi</p>
+    <p><a href="https://github.com/Leopard-Seal/what-is-cnn">Github</a></p>
+    <div id="ref">
+        <p>参考:</p>
+        <blockquote>
+            <p>一文看懂variant convolutions
+                <a href="https://blog.csdn.net/WANGWUSHAN/article/details/103575060">https://blog.csdn.net/WANGWUSHAN/article/details/103575060</a></p>
+        </blockquote>
+        <blockquote>
+            <p>深層学習 改訂第2版　岡谷貴之</p>
+        </blockquote>
+        <blockquote>
+            <p>962 - 連載解説 「Deep Learning (深層学習)」 〔第4回〕<a href="https://www.jstage.jst.go.jp/article/jjsai/28/6/28_962/_pdf">https://www.jstage.jst.go.jp/article/jjsai/28/6/28_962/_pdf</a></p>
+        </blockquote>
+        <blockquote>
+            <p>CNN Explainer
+                Learn Convolutional Neural Network (CNN) in your browser!<a href="https://poloclub.github.io/cnn-explainer/index.html">https://poloclub.github.io/cnn-explainer/</a></p>
+        </blockquote>
+        <blockquote>
+            <p>What is backpropagation really doing? | Chapter 3, Deep learning<a href="https://youtu.be/Ilg3gGewQ5U">Youtube : 3blue1brown</a></p>
+        </blockquote>
+    </div>
+</footer>
+
+
+<script>
+
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    const hamburgerIcon = document.getElementById('hamburger-icon');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+
+    hamburgerIcon.addEventListener('click', () => {
+        if (dropdownMenu.style.display === "none" || dropdownMenu.style.display === "") {
+            dropdownMenu.style.display = "flex";
+            hamburgerIcon.classList.add('active');
+        } else {
+            dropdownMenu.style.display = "none";
+            hamburgerIcon.classList.remove('active');
+        }
+    });
+</script>
+</body>
+</html>
